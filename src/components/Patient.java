@@ -1,5 +1,6 @@
 package src.components;
 
-public class Patient {
+//Class Patient inherit from absstract user class:
+class Patient extends User {
     
 }
