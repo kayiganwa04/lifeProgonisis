@@ -1,10 +1,18 @@
 #!/bin/bash
 
-files="$@"
+file="$1"
+email="$2"
+password="$3"
 
-for i in $files; do
-    # Append a sentence to the text file
-    echo "Email: kayiganwa04@gmail.com" >> "$i"
-    echo "Password: 123456" >> "$i"
-    echo "" >> "$i"
-done
+# Check if email already exists
+if grep -q "Email: $email" "$file"; then
+    echo "failure"
+    exit 1
+fi
+
+# Append the email and password to the file
+echo "Email: $email" >> "$file"
+echo "Password: $password" >> "$file"
+
+echo "success"
+exit 0
