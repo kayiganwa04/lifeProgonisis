@@ -1,14 +1,12 @@
 #!/bin/bash
 
-files="$@"
+file="$1"
+email="$2"
+password="$3"
 
-for i in $files; do
-    # Append a sentence to the text file
-    echo "Email: kayiganwa04@gmail.com" >> "$i"
-    echo "Password: 123456" >> "$i"
-    echo "" >> "$i"
-    # Read and print the contents of the file
-    echo "Contents of $i:"
-    cat "$i"
-    echo "-----------------------"
-done
+# Check if the email and password combination exists on the same line
+if grep -q "Email: $email" "$file" && grep -A 1 "Email: $email" "$file" | grep -q "Password: $password"; then
+    echo "success"
+else
+    echo "failure"
+fi
