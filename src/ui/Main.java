@@ -1,8 +1,8 @@
 package src.ui;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import src.components.RandomString;
 
@@ -10,31 +10,139 @@ public class Main{
 
 
     public static String registerAPI(String em, String uuid, String role) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
+            
+            // Path to Git Bash on windows os:
+            //String bashPath = "C:\\Program Files\\Git\\bin\\bash.exe";
+
+            /*
+             * Build command on windows os would be: 
+             * String[] cmd = {"bashPath", "-c", scriptPath + " " + em + " " + uuid + " " + role};
+             * 
+             * */
+             
+
+            // Full path to the script
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/register.sh").toString();
+
             // Build the command
-            String[] cmd = {"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe", "-c", "./register.sh " + em + uuid + role};
+            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid + " " + role};
+
+            // Debug information
+            //System.out.println("Executing command: " + String.join(" ", cmd));
 
             // Start the process
             ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
             Process process = pb.start();
 
             // Read the output from the process
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
 
             // Wait for the process to complete
-            process.waitFor();
+            //int exitCode = process.waitFor();
+            //System.out.println("Exit code: " + exitCode);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return result.toString(); //return "true" for success!
     }
     
+    public static String loginAPI(String em, String pwd) {
+        StringBuilder result = new StringBuilder();
+        try {
+
+            // Full path to the script
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/login.sh").toString();
+
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + pwd};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+
+    public static String confirmOnboardedStatus(String em, String uuid) {
+        StringBuilder result = new StringBuilder();
+        try {
+
+            // Full path to the script to check if a user had been onboarded or not:
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/confirmOnboarded.sh").toString();
+
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+    
+
+    
+    public static String completeUserRegistration(String em, String uuid, String fname, String lname, String password) {
+        StringBuilder result = new StringBuilder();
+        try {
+
+            // Full path to the script to finalize user registration:
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/completeOnboarding.sh").toString();
+
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid + " " + fname + " " + lname + " " + password};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+    
+
     private static  void loginUI(){
         int choice;
         //Scanner objects to get user inputs
@@ -46,25 +154,25 @@ public class Main{
         System.out.println("\t\t Email: \t");
         email = input1.nextLine();
 
-        if(email.length() > 0){
+        if(email.length() > 6){
             System.out.println("\t\t Password: \t");
             password = input2.nextLine();
             if(password.length() > 0){
-                //loginAPI(email, password);
-
                 /* --- call User Login Class method: ---
 
                 Checks and validate login credentials then:
                 notes user role type, to determine their type of Dashboard,
                 either patientUI or adminUI */
 
-                if(new String("admin@user.com").equals(email) && new String("admin").equals(password)){
+                String result = loginAPI(email, password); //Call Bash script API method
+
+                if(result.toLowerCase().contains("true") && result.toLowerCase().contains("admin")){
                      //User is admin
                     //Run admin Menu UI:
                     System.out.println("\n\n\t\t\t\t Welcome Admin! "+ (char)3+"\n");
                     adminMenu();
 
-                }else if(new String("patient@user.com").equals(email) && new String("patient").equals(password)){
+                }else if(result.toLowerCase().contains("true") && result.toLowerCase().contains("patient")){
                     //User is Normal user - Patient
                     //Run patient Menu UI:
                     System.out.println("\n\n\t\t\t\t Welcome Back! "+ (char)3+"\n");
@@ -80,7 +188,7 @@ public class Main{
                 choice = 1;
             }
         }else{
-            System.err.println("\n\n\tPlease input an email! \n");
+            System.err.println("\n\n\tPlease input a valid email! \n");
         }
 
     }
@@ -102,24 +210,37 @@ public class Main{
         inputEmail = input2.nextLine();
 
         //Check that there were actual input values:
-        if(inputUUID.length() > 0 && inputEmail.length() > 0){
+        if(inputUUID.length() == 12 && inputEmail.length() > 5){
+
             /* Check the user text file, to see if the user had been onboarded, then:
                 Continue with the registration process if this user with email and UUID was onboarded: */
+                String result = confirmOnboardedStatus(inputEmail, inputUUID);
 
-                //Then go on to collect their data for final registration:
-                System.out.println("\n\n\t\t\t Enter your First Name :--> \t ");
-                inputFName = input3.nextLine();
+                if(new String(result).equals("true")){
+                    System.out.println("\n\n\t\t\t\t Complete your registration, " + inputEmail + " !");
+
+                    //Then go on to collect their data for final registration:
+                    System.out.println("\n\n\t\t\t Enter your First Name :--> \t ");
+                    inputFName = input3.nextLine();
         
-                System.out.println("\n\n\t\t\t Enter your Last Name :--> \t ");
-                inputLName = input4.nextLine();
+                    System.out.println("\n\n\t\t\t Enter your Last Name :--> \t ");
+                    inputLName = input4.nextLine();
         
-                System.out.println("\n\n\t\t\t Enter your Password :--> \t ");
-                inputPassword = input5.nextLine();
+                    System.out.println("\n\n\t\t\t Enter your Password :--> \t ");
+                    inputPassword = input5.nextLine();
 
-                //--- Call The registerUser(inputFName, inputLName, password) Method of the User Class ---
-
-                System.out.println("\n\n\t\t\t" + inputFName+ " " + inputLName + "\'s registration is successful!! \n");
-                //return back to Menu
+                    //--- Call The registerUser(inputFName, inputLName, password) Method of the User Class ---
+                    String result2 = completeUserRegistration(inputEmail, inputUUID, inputFName, inputLName, inputPassword);
+                    if(new String(result2).equals("true")){
+                        System.out.println("\n\n\t\t\t\t"+ inputFName+ " " + inputLName + ", your Registration has been completed! \n");
+                    } else{
+                        System.out.println("\n\n\t\t\t\t Failed to register your account! \n");
+                    }
+                    //return back to Menu
+                } else{
+                    System.out.println("\n\n\t\t\t\t Sorry, you can't perform this activity. Try again later!\n");
+                    //go back
+                }        
         }else{
             System.err.println("\n\n\t\t Please input valid email and UUID!! \n");
             //returns to Menu
@@ -162,18 +283,29 @@ public class Main{
         int stringLength = 12;
         UUID = randomStr.getAlphaNumericString(stringLength);
 
-         //Check if UUID generated is valid:
-         if(UUID.length() > 0 && UUID.length() == 12){
+         //Check if UUID generated and email are valid:
+         if(UUID.length() > 0 && UUID.length() == 12 && userEmail.length() > 6){
             System.out.println("\t\t\tNew user Email: " + userEmail + "\n");
+
+            System.out.println("\n\t\t\tNew User\'s Role:  "+ role+"\n");
+            System.out.println("\n\t\t\tNew User\'s UUID:  "+ UUID+"\n");
+   
+            //--- inititiate OnboardUser(email, Role, UUID) Admin method: ---
+            String result = registerAPI(userEmail, UUID, role);
+
+            //Success:
+            if(new String(result).equals("true")){
+               System.out.println("\n\n\t\t\t"+ role +" User Onboarded Successfully!\n");
+            }else{
+                //Failure
+               System.out.println("\n\n\t\t\tUser Onboarding Failed!\n");
+            }
+   
+            System.out.println("\n\t\t\t\t\t Please mark down User Email and UUID for registration continuation!!\n ");
+         }else{
+            System.out.println("\n\n\t\t\tInvalid UUID or Email!\n");
          }
-         System.out.println("\n\t\t\tNew User\'s Role:  "+ role+"\n");
-         System.out.println("\n\t\t\tNew User\'s UUID:  "+ UUID+"\n");
 
-         //--- inititiate OnboardUser(email, Role, UUID) Admin method: ---
-         String result = registerAPI(userEmail, UUID, role);
-         System.out.println("\nResult: " + result);
-
-         System.out.println("\n\t\t\t\t\t Please mark down User Email and UUID for registration continuation!!\n ");
     }
 
     private static void adminMenu(){
@@ -265,7 +397,7 @@ public class Main{
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("\n\n\t\t\t\t Welcome To Life Prognosis! \n");
         //App option choice as int:
         int choice;

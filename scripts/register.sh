@@ -1,25 +1,28 @@
 #!/bin/bash
 
-file="$1"
-email="$2"
-uuid="$3"
-role="$4"
+# Function to store user information
+onboardUserStore() {
+    local email="$1"
+    local uuid="$2"
+    local role="$3"
+    local file="Resources/user-store.txt"
 
-# Check if email already exists
-echo "Register Bash shell Active!"
-if grep -q "email: $email" && "uuid: $uuid" "$file"; then
-    echo "failure"
-    exit 1
-fi
+    # Remove empty lines at the end of the file
+    sed -i '/^$/d' "$file"
+    
+    # Append the user information to the file:
+    # firstname lastname email password role uuid:
+    echo -e "\n " " " "$email " " " "$role " "$uuid" >> "$file"
+    
+    # Check if the last command was successful
+    if [[ $? -eq 0 ]]; then
+        #Successfully onboarded!!
+        echo "true"
+    else
+        echo "false"
+    fi
+}
 
-# Append the email and password to the file
-echo " " >> "$file"
-echo "firstname: " >> "$file"
-echo "lastname: " >> "$file"
-echo "email: $email" >> "$file"
-echo "Password: " >> "$file"
-echo "role: $role" >> "$file"
-echo "uuid: $uuid" >> "$file"
 
-echo "success"
-exit 0
+# Calling the function with arguments passed to the script
+onboardUserStore "$1" "$2" "$3"
