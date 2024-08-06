@@ -5,7 +5,6 @@ import java.io.IOException;
 //Child class of User
 class Patient extends User {
 
-
     public static boolean login(String password, String email) {
         String[] command = {"/bin/bash", "scripts/login.sh", "scripts/file1.txt", email, password};
         try {
@@ -17,14 +16,5 @@ class Patient extends User {
             e.printStackTrace();
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        // Example usage
-        //boolean isRegistered = register("123456", "newuser8@example.com");
-        //System.out.println("Registration successful: " + isRegistered);
-
-        // boolean isLoggedIn = login("123456", "kayiganwa04@gmail.com");
-        // System.out.println("Login successful: " + isLoggedIn);
     }
 }

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Function to store user information
 onboardUserStore() {
     local email="$1"
@@ -12,7 +13,7 @@ onboardUserStore() {
     
     # Append the user information to the file:
     # firstname lastname email password role uuid:
-    echo -e "\n " " " "$email " " " "$role " "$uuid" >> "$file"
+    echo -e "\nUNKNOWN" "UNKNOWN" "$email" "UNKNOWN" "$role" "$uuid" >> "$file"
     
     # Check if the last command was successful
     if [[ $? -eq 0 ]]; then
