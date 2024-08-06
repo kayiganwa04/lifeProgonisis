@@ -1,10 +1,40 @@
 package src.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 import src.components.RandomString;
 
 public class Main{
 
+
+    public static String registerAPI(String em, String uuid, String role) {
+        String result = "";
+        try {
+            // Build the command
+            String[] cmd = {"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe", "-c", "./register.sh " + em + uuid + role};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result += line;
+            }
+
+            // Wait for the process to complete
+            process.waitFor();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
     private static  void loginUI(){
         int choice;
         //Scanner objects to get user inputs
@@ -20,6 +50,7 @@ public class Main{
             System.out.println("\t\t Password: \t");
             password = input2.nextLine();
             if(password.length() > 0){
+                //loginAPI(email, password);
 
                 /* --- call User Login Class method: ---
 
@@ -138,7 +169,9 @@ public class Main{
          System.out.println("\n\t\t\tNew User\'s Role:  "+ role+"\n");
          System.out.println("\n\t\t\tNew User\'s UUID:  "+ UUID+"\n");
 
-         //--- inititiate OnboardUser(email, Role, UUID) Admin method; from the Admin.onboardUser() method. ---
+         //--- inititiate OnboardUser(email, Role, UUID) Admin method: ---
+         String result = registerAPI(userEmail, UUID, role);
+         System.out.println("\nResult: " + result);
 
          System.out.println("\n\t\t\t\t\t Please mark down User Email and UUID for registration continuation!!\n ");
     }
@@ -232,7 +265,7 @@ public class Main{
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         System.out.println("\n\n\t\t\t\t Welcome To Life Prognosis! \n");
         //App option choice as int:
         int choice;
