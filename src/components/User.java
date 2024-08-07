@@ -48,7 +48,7 @@ public abstract class User {
     }
 
     public static boolean login(String password, String email) {
-        String[] command = {"/bin/bash", "scripts/login.sh", "scripts/file1.txt", email, password};
+        String[] command = {"bash", "scripts/login.sh", "scripts/Resources/user-store.txt", email, password};
         try {
             ProcessBuilder pb = new ProcessBuilder(command);
             Process process = pb.start();

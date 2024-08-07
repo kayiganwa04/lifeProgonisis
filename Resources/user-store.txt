@@ -1,6 +1,4 @@
-firstname: John 
-lastname: Doe
-email: admin@admin.com
-password: admin123
-role: admin
-uuid: 123
+firstname lastname email password role uuid 
+John Doe admin@user.com admin123 Admin abcdef123456
+Janet Jackson jane@gmail.com jane123 Patient KlEcLnBPaImB
+Fonya Brandone fonya@gmail.com UNKNOWN Patient Uzit5Oo1qvRh
