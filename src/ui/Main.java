@@ -124,6 +124,9 @@ public class Main{
             // Build the command
             String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid + " " + fname + " " + lname + " " + password};
 
+            // Print command for debugging
+            System.out.println("Executing command: " + String.join(" ", cmd));
+
             // Start the process
             ProcessBuilder pb = new ProcessBuilder(cmd);
             pb.redirectErrorStream(true); // Combine error and output streams
@@ -135,6 +138,10 @@ public class Main{
             while ((line = reader.readLine()) != null) {
                 result.append(line);
             }
+
+            // Wait for the process to complete (optional but useful for debugging)
+            int exitCode = process.waitFor();
+            System.out.println("Script exit code: " + exitCode);
 
         } catch (Exception e) {
             e.printStackTrace();

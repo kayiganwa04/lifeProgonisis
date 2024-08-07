@@ -1,5 +1,10 @@
 firstname lastname email password role uuid
 John Doe admin@user.com admin123 Admin abcdef123456
 Jane Jackson jane237@gmail.com jane123 Patient  KlEcLnBPaImB
-
     fonya@gmail.com    Patient  3zdidmkxda1y
+    test@gmail.com    Patient  iEmg2N5QZkMQ
+    shi@gmail.com    Patient  fj4hLsbUxgNu
+    lea@gmail.com    Patient  bNphvxHZ6ibV
+    angy@gmail.com    Patient  am2lHcGTFLaV
+
+    jane@gmail.com    Patient  POhfn81WYInm
