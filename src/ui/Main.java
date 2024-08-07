@@ -315,6 +315,87 @@ public class Main{
          }
 
     }
+    private static String exportUsersAPI(){
+        StringBuilder result = new StringBuilder();
+        try {
+
+            // Full path to the script
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/exportUserData.sh").toString();
+
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+    private static void exportUsers(){
+        //Export User data:
+        //Call Bash export data script:
+        String result;
+        result = exportUsersAPI();
+        if("false".equals(result)){
+            System.err.println("\n\n\t\t\t Sorry, could not export User data!!");
+        }else{
+            System.out.println(result);
+        }
+    }
+
+
+    
+    private static String exportStatisticsAPI(){
+        StringBuilder result = new StringBuilder();
+        try {
+
+            // Full path to the script
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/exportStatistics.sh").toString();
+
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath};
+
+            // Start the process
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true); // Combine error and output streams
+            Process process = pb.start();
+
+            // Read the output from the process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+    private static void exportStatistics(){
+        //Export Statistics data:
+        //Call Bash export Statistics script:
+        String result;
+        result = exportStatisticsAPI();
+        if("false".equals(result)){
+            System.err.println("\n\n\t\t\t Sorry, could not export Statistics data!!");
+        }else{
+            System.out.println(result);
+        }
+    }
 
     private static void adminMenu(){
 
@@ -343,11 +424,11 @@ public class Main{
 
             }else if(choice == 2){
                 //Export user data method:
-                System.out.println("\n\t\t Coming soon!! \n");
+                exportUsers();
                
             }else if(choice == 3){
                 //Download Statistics:
-                System.out.println("\n\t\t Coming soon!! \n");
+                exportStatistics();
 
             } else{
                 if(choice !=0){
@@ -393,8 +474,7 @@ public class Main{
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return result;
-        
+                return result;
     }
 
     private static String SaveUpdatedDataAPI(String email, String password, String fname, String lname){
@@ -456,6 +536,37 @@ public class Main{
 
         return result;
     }
+    private static String saveEstimatetoCSVAPI(String fn, String ln, String email, int age, String country, String onARTStatus, int estimateVal){
+        String result = "";
+        try {
+            // Full path to the script
+            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/saveStatistic.sh").toString();
+            // Build the command
+            String[] cmd = {"bash", "-c", scriptPath + " " + fn + " " + ln + " " + email + " " + age + " " + country + " " + onARTStatus + " " + estimateVal};
+
+            // Execute the command
+            Process process = Runtime.getRuntime().exec(cmd);
+
+            // Get the output of the bash script
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result += line;
+            }
+
+            // Wait for the process to complete
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("Script execution failed with exit code " + exitCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;  
+    }
+    public static String sessionFName = " ";
+    public static String sessionLName = " ";
 
     private static void evaluteLifeExpectancyUI(){
         //Needed variables:
@@ -509,10 +620,19 @@ public class Main{
         }
 
         System.out.println("\n\n\t\t\t\t Your HIV Survival rate is: " + estimate + " Year(s) from now!!\n");
+        
+        //Save to csv:
+        String result;
+        result = saveEstimatetoCSVAPI(sessionFName, sessionLName, sessionEmail, currentAge, country, takingART, estimate);
+        if(!"success".equals(result)){
+            //error:
+            System.err.print("\n\n\t\tCould not save your statistics!!");
+        }else{
+            System.out.println("\n\n\t\tStatistic saved!");
+        }
     }
     private static void downloadSchedule(){
-        //Download calendar Schedule from API
-
+        //Download calendar Schedule from API - for Patients
 
     }
 
@@ -532,6 +652,10 @@ public class Main{
         //set fname and lastname:
         patient.setFirstName(userData[0]);
         patient.setLastName(userData[1]);
+
+        //Assign Fname to be used anywhere in the Patient Menu:
+        sessionFName = patient.getFirstName();
+        sessionLName = patient.getLastName();
         //Render Patient Menu:
                       //Patient ption choice as int: local int
        
