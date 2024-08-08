@@ -10,6 +10,8 @@ import src.components.RandomString;
 public class Main{
 
     
+    public static RandomString randomStr = new RandomString();
+    
     public static String registerAPI(String em, String uuid, String role) {
         StringBuilder result = new StringBuilder();
         try {
@@ -17,18 +19,16 @@ public class Main{
             // Path to Git Bash on windows os:
             //String bashPath = "C:\\Program Files\\Git\\bin\\bash.exe";
 
-            /*
-             * Build command on windows os would be: 
-             * String[] cmd = {"bashPath", "-c", scriptPath + " " + em + " " + uuid + " " + role};
-             * 
-             * */
+            String randomKey;
+            int stringLength = 24;
+            randomKey = randomStr.getAlphaNumericString(stringLength);
              
 
             // Full path to the script
             String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/register.sh").toString();
 
             // Build the command
-            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid + " " + role};
+            String[] cmd = {"bash", "-c", scriptPath + " " + em + " " + uuid + " " + role + " " + randomKey};
 
             // Debug information
             //System.out.println("Executing command: " + String.join(" ", cmd));
@@ -239,7 +239,7 @@ public class Main{
 
                     //--- Call The registerUser(inputFName, inputLName, password) Method of the User Class ---
                     String result2 = completeUserRegistrationAPI(inputEmail, inputUUID, inputFName, inputLName, inputPassword);
-                    if(new String(result2).equals("true")){
+                    if("true".equals(result2.toLowerCase())){
                         System.out.println("\n\n\t\t\t\t"+ inputFName+ " " + inputLName + ", your Registration has been completed! \n");
                     } else{
                         System.out.println("\n\n\t\t\t\t Failed to register your account! \n");
@@ -273,7 +273,7 @@ public class Main{
         System.out.println("\t\t Should the user be an Admin? Yes or No :-->  \t");
         checkAdminRole = input3.nextLine();
 
-        if(checkAdminRole.toLowerCase() == "yes"){
+        if("yes".equals(checkAdminRole.toLowerCase())){
             isAdmin = true;
         }else{
             isAdmin = false;
@@ -287,8 +287,7 @@ public class Main{
         }
 
         //Generate new unique random user id and Save initial User data for new user Onboarding to text file:
-        RandomString randomStr = new RandomString();
-        int stringLength = 12;
+        int stringLength = 24;
         UUID = randomStr.getAlphaNumericString(stringLength);
 
          //Check if UUID generated and email are valid:

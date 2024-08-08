@@ -2,3 +2,6 @@ firstname lastname email password role uuid
 John Doe admin@user.com admin123 Admin abcdef123456
 Janet Jackson jane@gmail.com jane123 Patient KlEcLnBPaImB
 Fonya Brandone fonya@gmail.com fonya123 Patient Uzit5Oo1qvRh
+Eddy John test@gmail.com test123 Patient TBXY0HIPVFmS
+
+Shishi Wafula shishi@gmail.com shishi123 Patient EU68iqskmne3
