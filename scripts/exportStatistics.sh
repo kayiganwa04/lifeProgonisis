@@ -8,12 +8,11 @@ open_statistics() {
     # Check if the file exists
     if [[ -f "$file" ]]; then
         # Open the file using less (for viewing)
-        echo -e " Data Successfully Exported:   "
-        less "$file"
+        echo -e " Data successfully exported to:  "$file" "
+        # less "$file"
 
         # Open the file: -----------------------------
         echo -e "  "
-
         # Check if the file exists
         if [[ -f "$file" ]]; then
             # Determine the operating system and open the file accordingly

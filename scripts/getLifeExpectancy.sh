@@ -16,7 +16,7 @@ get_life_expectancy() {
     # Use awk to match the country in column A and print the value in column G
     local life_expectancy=$(awk -F, -v country="$country" '
     BEGIN {IGNORECASE=1} 
-    NR>1 && $1 == country {print $7}' "$file")
+    NR>1 && $4 == country {print $7}' "$file")
 
     if [[ -n "$life_expectancy" ]]; then
         echo "$life_expectancy"

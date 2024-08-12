@@ -2,4 +2,8 @@ firstname,lastname,email,role
 firstname,lastname,email,role
 John,Doe,admin@user.com,Admin
 Janet,Jackson,jane@gmail.com,Patient
-Fonya,Brandone,fonya@gmail.com,Patient
+Brandone,Fonya,fonya@gmail.com,Patient
+Shishi,Wafula,shishi@gmail.com,Patient
+Eric,Azure,proferic@cmu.edu,Patient
+Sheila,Wafula,swafula@user.com,Admin
+UNKNOWN,UNKNOWN,boukar@andrew.cmu.edu,Patient

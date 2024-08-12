@@ -3,7 +3,7 @@
 
 # Function to store user information
 saveStatistic() {
- local firstname="$1"
+    local firstname="$1"
     local lastname="$2"
     local email="$3"
     local age="$4"

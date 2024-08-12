@@ -7,7 +7,7 @@ login_user() {
     local file="Resources/user-store.txt"
 
     # Check if the email and password match any entry
-# Search for the email and password and get the role if found
+    # Search for the email and password and get the role if found
     local user_data=$(grep "$email $password" "$file")
 
     if [[ -n "$user_data" ]]; then
