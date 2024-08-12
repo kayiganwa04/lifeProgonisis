@@ -1,7 +1,9 @@
 ## App previews:
 
 ### preview 1:
-![Screenshot (55)](https://github.com/user-attachments/assets/f4cbbe74-ff82-46dd-9f0d-46f478e14524)
+![Screenshot (88)](https://github.com/user-attachments/assets/4c1c515c-f1e6-418c-a7d1-45fe7b3f4bf5)
+
 
 ### preview 2:
-![Screenshot (57)](https://github.com/user-attachments/assets/b19097bd-37ec-49b0-8b1b-a68e591e1105)
+![Screenshot (89)](https://github.com/user-attachments/assets/a8ebdd4a-2119-441c-a5b0-7addca8875d1)
+
