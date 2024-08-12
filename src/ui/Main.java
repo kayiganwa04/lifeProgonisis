@@ -280,9 +280,18 @@ public class Main{
         // Choice 1 input objects:
         Scanner input = new Scanner(System.in);
     
-        // Get New User's email to onboard:
+        
+
+        while (true) {
         System.out.print("\n\uD83D\uDC49 Enter user email: ");
         userEmail = input.nextLine();
+            String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            if (userEmail.matches(emailRegex)) {
+                break;
+            } else {
+                System.err.println("\n\u274C Please input a valid email! \n");
+            }
+        }
     
         // Admin or Patient Role?:
         while (true) {
@@ -319,7 +328,6 @@ public class Main{
     
             // --- initiate OnboardUser(email, Role, UUID) Admin method: ---
             String result = registerAPI(userEmail, UUID, role);
-            System.out.println(">>>>>>>>log" + result);
             // Success:
             if ("true".equals(result)) {
                 System.out.println("\n\n\u2705 " + role + " User Onboarded Successfully!\n");
