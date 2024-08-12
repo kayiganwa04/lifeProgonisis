@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.Console;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import src.components.Extensions;
 import src.components.Patient;
@@ -147,61 +148,59 @@ public class Main{
     //Saves Logged in User session:
     private static String sessionEmail = "", sessionPass = "";
 
-    private static void loginUI(){
+    private static void loginUI() {
         int choice;
-        //Scanner objects to get user inputs
         Scanner input = new Scanner(System.in);
         String email, password;
-
+    
         System.out.println("\n\n\u2139\uFE0F Enter your login details \n ");
-        System.out.println("\u270F\uFE0F Enter Email: \t");
-        email = input.nextLine();
-
-        if(email.length() > 6){
-
-
-            System.out.println("\u270F\uFE0F Enter Password: \t");
-            Console console = System.console();
-            char[] hiddenPass = console.readPassword(" Password: ");
-            password = new String(hiddenPass);
-            if(password.length() > 0){
-                /* --- call User Login Class method: ---
-
-                Checks and validate login credentials then:
-                notes user role type, to determine their type of Dashboard,
-                either patientUI or adminUI */
-
-                String result = loginAPI(email, password); //Call Bash script API method
-
-                if(result.toLowerCase().contains("true") && result.toLowerCase().contains("admin")){
-                     //User is admin
-                     sessionEmail = email;
-                     sessionPass = password;
-                    //Run admin Menu UI:
-                    System.out.println("\n\n\u2139\\uFE0F Welcome Admin! "+ (char)3+"\n");
-                    adminMenu();
-
-                }else if(result.toLowerCase().contains("true") && result.toLowerCase().contains("patient")){
-                    //User is Normal user - Patient
-                    sessionEmail = email;
-                    sessionPass = password;
-                    //Run patient Menu UI:
-                    patientMenu();
-
-                }else{
-                    System.out.println("\n\n\u274C Invalid Email or Password \n");
-                    choice = 1;
-                }
-            }else{
-                //No password provided:
-                System.err.println("\n\n\u274C Password error! \n");
+    
+        // Loop until a valid email is provided
+        while (true) {
+            System.out.print("\u270F\uFE0F Enter Email: ");
+            email = input.nextLine();
+            String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            if (email.matches(emailRegex)) {
+                break;
+            } else {
+                System.err.println("\n\u274C Please input a valid email! \n");
+            }
+        }
+    
+        Console console = System.console();
+        char[] hiddenPass = console.readPassword("\n\u270F\uFE0F Enter Password: ");
+        password = new String(hiddenPass);
+    
+        if (password.length() > 0) {
+            // Call User Login Class method
+            String result = loginAPI(email, password); // Call Bash script API method
+    
+            if (result.toLowerCase().contains("true") && result.toLowerCase().contains("admin")) {
+                // User is admin
+                sessionEmail = email;
+                sessionPass = password;
+                // Run admin Menu UI:
+                System.out.println("\n\n\u2139\uFE0F Welcome Admin! " + (char)3 + "\n");
+                adminMenu();
+    
+            } else if (result.toLowerCase().contains("true") && result.toLowerCase().contains("patient")) {
+                // User is Normal user - Patient
+                sessionEmail = email;
+                sessionPass = password;
+                // Run patient Menu UI:
+                patientMenu();
+    
+            } else {
+                System.out.println("\n\u274C Invalid Email or Password \n");
                 choice = 1;
             }
-        }else{
-            System.err.println("\n\n\u274C Please input a valid email! \n");
+        } else {
+            // No password provided:
+            System.err.println("\n\n\u274C Password error! \n");
+            choice = 1;
         }
-
     }
+    
 
     private  static void completeUserRegistrationUI(){
         //Scanner objects to get user inputs
@@ -210,10 +209,10 @@ public class Main{
         String inputUUID, inputFName, inputLName, inputEmail;
         String  inputPassword = "";
 
-        System.out.println("\n\n\u270F\uFE0F Enter your UUID :--> \t ");
+        System.out.print("\n\u270F\uFE0F Enter your UUID : ");
         inputUUID = input.nextLine();
 
-        System.out.println("\n\n\u270F\uFE0F Enter your Email :--> \t ");
+        System.out.print("\n\u270F\uFE0F Enter your Email : ");
         inputEmail = input.nextLine();
 
         //Check that there were actual input values:
@@ -227,10 +226,10 @@ public class Main{
                     System.out.println("\n\n\u2139\uFE0F Complete your registration, " + inputEmail + " !");
 
                     //Then go on to collect their data for final registration:
-                    System.out.println("\n\n\u270F\uFE0F Enter your First Name : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your First Name : ");
                     inputFName = input.nextLine();
         
-                    System.out.println("\n\n\u270F\uFE0F Enter your Last Name : \t ");
+                    System.out.print("\n\u270F\uFE0F Enter your Last Name : ");
                     inputLName = input.nextLine();
         
                     String conPass;
@@ -241,13 +240,11 @@ public class Main{
 
                     do { 
                         //
-                        System.out.println("\n\n\u270F\uFE0F Enter your Password : \t ");
-                        hiddenPass1 = console.readPassword(" Password: ");
-                        System.out.println("\n\n\u270F\uFE0F Enter your Password : \t ");
-                        hiddenPass2 = console.readPassword(" Confirm Password: ");
+                        hiddenPass1 = console.readPassword("\n\u270F\uFE0F Enter your Password: ");
+                        hiddenPass2 = console.readPassword("\n\u270F\uFE0F Confirm your Password: ");
                         if (!new String(hiddenPass1).equals(new String(hiddenPass2))) {
                             //Passwords do not match:
-                            System.out.println("\n\n\u274C Passwords do not match! \n");
+                            System.out.println("\n\u274C Passwords do not match! \n");
                             repeat = true;
                         }else{
                             //Passwords match:
@@ -275,63 +272,67 @@ public class Main{
     }
 
 
-    private static void onboardUserUI(){
+    private static void onboardUserUI() {
+    
+        boolean isAdmin = false;  // Initialize isAdmin to a default value
+        String userEmail, role, UUID;
         
-        boolean isAdmin;
-        String userEmail, checkAdminRole, role, UUID;
-
-        //Choise 1 input objects:
+        // Choice 1 input objects:
         Scanner input = new Scanner(System.in);
-
-        //Get New User's email to onboard:
-        System.out.println("\uD83D\uDC49 Enter user email: ");
+    
+        // Get New User's email to onboard:
+        System.out.print("\n\uD83D\uDC49 Enter user email: ");
         userEmail = input.nextLine();
-
-        //Admin or Patient Role?:
-        System.out.println("\uD83E\uDD14 Should the user be an Admin? Yes or No :-->  \t");
-        checkAdminRole = input.nextLine();
-
-        if("yes".equals(checkAdminRole.toLowerCase())){
-            isAdmin = true;
-        }else{
-            isAdmin = false;
-        }
-
-        //Assign User roles:
-        if(isAdmin){
-            role = "Admin";
-        }else{
-            role = "Patient";
-        }
-
-        //Generate new unique random user id and Save initial User data for new user Onboarding to text file:
-        int stringLength = 24;
-        UUID = randomStr.getAlphaNumericString(stringLength);
-
-         //Check if UUID generated and email are valid:
-         if(UUID.length() > 0 && UUID.length() == 24 && userEmail.length() > 6){
-            System.out.println("\u2139\uFE0F New user Email: " + userEmail + "\n");
-
-            System.out.println("\n New User\'s Role:  "+ role+"\n");
-            System.out.println("\n New User\'s UUID:  "+ UUID+"\n");
-   
-            //--- inititiate OnboardUser(email, Role, UUID) Admin method: ---
-            String result = registerAPI(userEmail, UUID, role);
-
-            //Success:
-            if(new String(result).equals("true")){
-               System.out.println("\n\n\u2705 "+ role +" User Onboarded Successfully!\n");
-            }else{
-                //Failure
-               System.out.println("\n\n\u274C User Onboarding Failed!\n");
+    
+        // Admin or Patient Role?:
+        while (true) {
+            System.out.println("\n\uD83E\uDD14 Should the user be an Admin? \n");
+            System.out.println("   1. Yes\n");
+            System.out.println("   2. No \n");
+            System.out.print("\u270F\uFE0F Choose option--> ");
+            
+            try {
+                int choice = input.nextInt();
+                if (choice == 1 || choice == 2) {
+                    isAdmin = (choice == 1);
+                    break;
+                } else {
+                    System.out.println("\n\u274C Please enter a valid option!! \n");
+                }
+            } catch (Exception e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next();  // Clear the invalid input
             }
-   
-            System.out.println("\n\n \u2705 Please mark down User Email and UUID for registration continuation!!\n ");
-         }else{
+        }
+    
+        // Assign User roles:
+        role = isAdmin ? "Admin" : "Patient";
+    
+        // Generate new unique random user ID and save initial User data for new user onboarding to text file:
+        UUID = randomStr.getAlphaNumericString(24);
+    
+        // Check if UUID generated and email are valid:
+        if (UUID.length() == 24 && userEmail.length() > 6) {
+            System.out.println("\n\u2139\uFE0F New user Email: " + userEmail);
+            System.out.println("\n\u2139 New User's Role:  " + role);
+            System.out.println("\n\u2139 New User's UUID:  " + UUID);
+    
+            // --- initiate OnboardUser(email, Role, UUID) Admin method: ---
+            String result = registerAPI(userEmail, UUID, role);
+            System.out.println(">>>>>>>>log" + result);
+            // Success:
+            if ("true".equals(result)) {
+                System.out.println("\n\n\u2705 " + role + " User Onboarded Successfully!\n");
+            } else {
+                System.out.println("\n\n\u274C User Onboarding Failed!\n");
+            }
+    
+            System.out.println("\n\n\u2705 Please mark down User Email and UUID for registration continuation!!\n ");
+        } else {
             System.out.println("\n\n\u274C Invalid UUID or Email!\n");
-         }
-
+        }
     }
+    
     private static String exportUsersAPI(){
         StringBuilder result = new StringBuilder();
         try {
@@ -415,9 +416,10 @@ public class Main{
     }
 
     private static void adminMenu(){
+            Extensions animation = new Extensions();
 
                //App option choice as int: local int
-               int choice;
+               int choice = -1;
 
                //Scanner objects to get user inputs
                Scanner input = new Scanner(System.in);
@@ -431,28 +433,34 @@ public class Main{
             System.out.println("\uD83D\uDD13 0. Logout \n\n");
 
             System.out.print("\u270F\uFE0F Choose option--> ");
-
+            try {
+                
             //Get User Input Choice:
             choice = input.nextInt();
+            switch (choice) {
+                case 1:
+                    onboardUserUI();
+                    break;
+                case 2:
+                    exportUsers();
+                    break;
+                case 3:
+                    exportStatistics();
+                    break;
+                case 0:
+                    break;
+                default:
+                    if (choice != 0) {
+                        System.out.println("\n\u274C Please enter a valid option!! \n");
+                    }
+                    break;
 
-            if(choice == 1){
-                //onboard interface;
-                onboardUserUI();
+            }
+        } catch (Exception e) {
+            System.out.println("\n\u274C Invalid input! Please enter a number.");
+            input.next(); 
+        }
 
-            }else if(choice == 2){
-                //Export user data method:
-                exportUsers();
-               
-            }else if(choice == 3){
-                //Download Statistics:
-                exportStatistics();
-
-            } else{
-                if(choice !=0){
-                    System.out.println("\n\u274C Please enter a valid option!! \n");
-                }
-               }
-            //Choice 0 will Logout Admin from his Dashboard!
         }while(choice != 0);
 
 
@@ -594,19 +602,42 @@ public class Main{
 
         Scanner input = new Scanner(System.in);
 
-        System.out.println("\n\n\u270F\uFE0F Which country are you from (Enter country code e.g: RW) ");
+        System.out.print("\n\u270F\uFE0F Which country are you from (Enter country code e.g: RW) ");
         country = input.nextLine();
 
-        System.out.println("\n\u270F\uFE0F Are you on ART Treatment ?(Yes or No): ");
+        while (true) {
+            System.out.println("\n\u270F\uFE0F Are you on ART Treatment?\n");
+            System.out.println("   1. Yes\n");
+            System.out.println("   2. No \n");
+            System.out.print("\u270F\uFE0F Choose option--> ");
+            try {
+                int choice = input.nextInt();
+                if (choice == 1) {
+                    takingART = "Yes";
+                    break;
+                } else if (choice == 2) {
+                    takingART = "No";
+                    break;
+                }
+                 else {
+                    System.out.println("\n\u274C Please enter a valid option!! \n");
+                }
+            } catch (Exception e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next();  // Clear the invalid input
+            }
+        }
+
+        
         takingART = input.nextLine();
 
-        System.out.println("\n\u270F\uFE0F What\'s your current age(in Years e.g: 30): ");
+        System.out.print("\n\u270F\uFE0F What\'s your current age(in Years e.g: 30): ");
         currentAge = input.nextInt();
 
-        System.out.println("\n\u270F\uFE0F How old where you when you first contracted HIV? (in Years) : ");
+        System.out.print("\n\u270F\uFE0F How old where you when you first contracted HIV? (in Years) : ");
         ageContracted = input.nextInt();
 
-        System.out.println("\n\u270F\uFE0F At What age did you start your treatment? (in Years e.g: 31): ");
+        System.out.print("\n\u270F\uFE0F At What age did you start your treatment? (in Years e.g: 31): ");
         ageStartedTakingART = input.nextInt();
 
         //Patient is on ART ? True or False:
@@ -640,7 +671,7 @@ public class Main{
         Extensions animation = new Extensions();
         animation.speak("Your HIV Survival rate is: " + estimate + " Year(s) from now");
         System.out.println("\n\n ***************************************************************************************************** \n");
-        System.out.println("\n\t \u2705 Your HIV Survival rate is: " + estimate + " Year(s) from now!!\n");
+        System.out.println("\n\u2705 Your HIV Survival rate is: " + estimate + " Year(s) from now!!\n");
         System.out.println("\n\n ***************************************************************************************************** \n\n");
         
         //Save to csv:
@@ -688,7 +719,7 @@ public class Main{
                       //Normal user - Patient Dashboard Menu:
                       Extensions animation = new Extensions();
                       animation.speak(" Welcome back, " + patient.getFirstName() + " " + patient.getLastName());
-                      System.out.println("\n Welcome back, " + patient.getFirstName() + " " + patient.getLastName() + (char)3+"\n");
+                      System.out.println("\n\n Welcome back, " + patient.getFirstName() + " " + patient.getLastName() + (char)3);
                do{
 
                    System.out.println("\n\n\uD83C\uDFE0 Dashboard: \n\n");
@@ -721,29 +752,45 @@ public class Main{
 
                    }else if(choice == 3){
                     System.out.println("\n\u2139\uFE0F Update Your information: \n");
-                    System.out.println("\n\u270F\uFE0F 1. Are you sure you want to update your information: (Yes or No) --> ");
                     
-                    String updateCntrl, newFName, newLName;
+                    while(true){
+                        System.out.println("\n\u270F\uFE0F Are you sure you want to update your information?\n");
+                        System.out.println("   1. Yes\n");
+                        System.out.println("   2. No \n");
+                        System.out.print("   \u270F\uFE0F Choose option--> ");
+                        
+                        String newFName, newLName;
+    
+                        Scanner choiceOption = new Scanner(System.in);
+                        Scanner updateInput = new Scanner(System.in);
+                        try {
+                            int option = choiceOption.nextInt();
+                            if (option == 1) {
+                                System.out.print("\n\u270F\uFE0F Enter new First name: ");
+                                newFName = updateInput.nextLine();
+                                System.out.print("\n\u270F\uFE0F Enter new Last name: ");
+                                newLName = updateInput.nextLine();
 
-                    Scanner updateInput = new Scanner(System.in);
-                    updateCntrl = updateInput.nextLine();
-                    if("yes".equals((String)updateCntrl.toLowerCase())){
-                        System.out.println("\n\u270F\uFE0F 1. Enter new First name: ");
-                        newFName = updateInput.nextLine();
-                        System.out.println("\n\u270F\uFE0F 1. Enter new Last name: ");
-                        newLName = updateInput.nextLine();
-
-                        //-- SaveUpdatedDataAPI() --:
-                        String res = SaveUpdatedDataAPI(patient.getEmail(), patient.getPassword(), newFName, newLName);
-                        System.out.println(res+"\n");
-                        if("true".equals(res.toLowerCase())){
-                            //Save successful:
-                            System.out.println("\n\u2705 Data Updated Successfully!! \n");
-                        }else{
-                            System.err.print("\n\u274C Update Failed!! \n");
+                                //-- SaveUpdatedDataAPI() --:
+                                String res = SaveUpdatedDataAPI(patient.getEmail(), patient.getPassword(), newFName, newLName);
+                                if("true".equals(res.toLowerCase())){
+                                    //Save successful:
+                                    System.out.println("\n\u2705 Data Updated Successfully!! \n");
+                                }else{
+                                    System.err.print("\n\u274C Update Failed!! \n");
+                                }
+                                    break;
+                            } else if (option == 2) {
+                                break;
+                            }
+                            else {
+                                System.out.println("\n\u274C Please enter a valid option!! \n");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("\n\u274C Invalid input! Please enter a number.");
+                            updateInput.next(); // Clear the invalid input
                         }
                     }
-       
                    }else if(choice == 4){
                     System.out.println("\n Coming soon!! \n");
                     
@@ -790,48 +837,46 @@ public class Main{
         //--------------------------------------------------------------
         System.out.println("\n\n\uD83C\uDFE5 Welcome To Life Prognosis! \n");
         //App option choice as int:
-        int choice;
+        int choice = -1;
         //Scanner objects to get user inputs
         Scanner input = new Scanner(System.in);
         //Choice menu:
         //do while loop if choice is not 0:
-        do{
-            System.out.println(YELLOW+"\n \uD83C\uDFE0 Menu \n\n");
-            System.out.println(" 1. \uD83D\uDD10 Login \n");
-            System.out.println(" 2. \uD83D\uDCDD Registration \n");
-            System.out.println(" 0. \uD83D\uDEAA Exit \n\n");
+        do {
+            System.out.println(YELLOW + "\n\uD83C\uDFE0 Menu \n\n");
+            System.out.println("1. \uD83D\uDD10 Login \n");
+            System.out.println("2. \uD83D\uDCDD Registration \n");
+            System.out.println("0. \uD83D\uDEAA Exit \n\n");
 
             System.out.print("\u270F\uFE0F Choose Option--> ");
 
-            //Get User Input Choice:
-            choice = input.nextInt();
+            try {
+                // Get User Input Choice:
+                choice = input.nextInt();
 
-            switch (choice) {
-                case 1:
-                    //Login Interface
-                    loginUI();
-                    break;
-            //Choice 0 Exits the program!
-                case 2:
-                    //Registration Module using uuid:
-                    //call up the complete registration screen/UI:
-                    completeUserRegistrationUI();
-                    break;
-                case 0:
-                animation.speak("Good bye!");
-                    System.out.println("\n\n ***************************************************************************************************** \n");
-                    System.out.println("\n\t\t\t\uD83D\uDC4B Good bye for now \uD83D\uDC4B \n");
-                    System.out.println("\n\n ***************************************************************************************************** \n\n");
-                    
-                    break;
-                default:
-                    if(choice !=0){
-                        System.out.println("\n\u274C Please enter a valid option!! \n");
-                    }   break;
+                switch (choice) {
+                    case 1:
+                        // Login Interface
+                        loginUI();
+                        break;
+                    case 2:
+                        // Registration Module using UUID:
+                        // Call up the complete registration screen/UI:
+                        completeUserRegistrationUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        if (choice != 0) {
+                            System.out.println("\n\u274C Please enter a valid option!! \n");
+                        }
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next(); // Clear the invalid input from the scanner buffer
             }
-        }while(choice != 0);
 
+        } while (choice != 0);
     }
-
-
 }
