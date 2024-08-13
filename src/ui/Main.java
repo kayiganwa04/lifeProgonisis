@@ -946,7 +946,7 @@ while (true) {
                 System.out.println("\uD83E\uDD16 5. AI therapy assistant \n");
                 System.out.println("\uD83D\uDEAA 0. Logout \n\n");
 
-                System.out.print("\u270F\uFE0F Enter Option--> ");
+                System.out.print("\u270F\uFE0F Choose Option--> ");
 
                 // Get User Input Choice:
                 choice = (int) input.nextInt();
