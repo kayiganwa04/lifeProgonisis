@@ -13,8 +13,8 @@ onboardUserStore() {
     sed -i '/^$/d' "$file"
     
     # Append the user information to the file:
-    # firstname lastname email password role uuid:
-    echo -e "\nUNKNOWN" "UNKNOWN" "$email" "$randomKey" "$role" "$uuid" >> "$file"
+    # firstname lastname email dob hiv_status password role uuid:
+    echo -e "\nNULL" "NULL" "$email" "$randomKey" "NULL" "NULL" "$role" "$uuid" "NULL" >> "$file"
     
     # Check if the last command was successful
     if [[ $? -eq 0 ]]; then

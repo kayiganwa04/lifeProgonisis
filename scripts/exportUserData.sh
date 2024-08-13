@@ -15,7 +15,7 @@ export_data_to_csv() {
     echo -e "firstname,lastname,email,role" > "$output_file"
 
     # Append the content of user-store.txt to the CSV file excluding uuid and password
-    awk 'BEGIN {OFS=","} {print $1, $2, $3, $5}' "$input_file" >> "$output_file"
+    awk 'BEGIN {OFS=","} {print $1, $2, $3, $5, $6}' "$input_file" >> "$output_file"
 
     echo -e "Data successfully exported to $output_file"
     echo -e "   "

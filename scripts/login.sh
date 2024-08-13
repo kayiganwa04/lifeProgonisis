@@ -12,7 +12,7 @@ login_user() {
 
     if [[ -n "$user_data" ]]; then
         # Extract the role from the user data
-        local role=$(echo "$user_data" | awk '{print $5}')
+        local role=$(echo "$user_data" | awk '{print $7}')
         echo "true $role" # Return true and the user's role
     else
         echo "false" # Return false if not found

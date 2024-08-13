@@ -1,9 +1,4 @@
-firstname lastname email password role uuid 
-John Doe admin@user.com admin123 Admin abcdef123456
-Janet Jackson jane@gmail.com jane123 Patient KlEcLnBPaImB
-Brandone Fonya fonya@gmail.com fonya123 Patient Uzit5Oo1qvRh
-Shishi Wafula shishi@gmail.com shishi123 Patient 5rrW1aVdCBD2tdo1Q1fmx53c
-Eric Azure proferic@cmu.edu eric250 Patient 5AhJYske3mUUZMyMIXahuvYF
-Sheila Wafula swafula@user.com swafula123 Admin IYMvzQAnxWI0BgfGWxgVBKGn
-Baimam Jean boukar@andrew.cmu.edu boukar123 Patient 42oYThO9QsbRj4Ut1BoYU8Wd
-Glen Thompson glent@cmu.edu glend123 Patient lT88TA42Rx5a6vhZzUtY6IAf
+firstname lastname email password dob hiv_status role uuid country
+John Doe admin@user.com admin123 NULL NULL Admin abcdef123456 CM
+Janet Jackson jane@gmail.com 2002-05-17 positive jane123 Patient KlEcLnBPaImB RW
+Fonya Brandone fonya@gmail.com fonya123 17/05/2000 Positive Patient c8yHj0Zcn2gTlhNCF8V8DsPA rw

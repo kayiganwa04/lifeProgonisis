@@ -12,7 +12,7 @@ def query_gpt_and_speak(prompt):
         system_message = {
             "role": "system", 
             "content": "Provide summarized answers. You are an AI model specialized in Health-related questions, especially HIV/AIDS. You were created by the Nyungwe4 group at Carnegie Mellon University Africa, also called CMU-Africa.",
-        }
+        },
         # Query GPT
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -30,8 +30,8 @@ def query_gpt_and_speak(prompt):
         engine.setProperty('rate', 150)  # Adjust speech rate
 
         # Speak out the response
-        engine.say(gpt_response)
-        engine.runAndWait()
+        #engine.say(gpt_response)
+        #engine.runAndWait()
 
         return gpt_response
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         prompt = " ".join(sys.argv[1:])
         result = query_gpt_and_speak(prompt)
         if result:
-            print("\uD83E\uDD16 AI Therapy:", result)
+            print("\n\n🤖:", result)
         else:
             print("Please try again.!")
     else:
