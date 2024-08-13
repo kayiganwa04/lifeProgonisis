@@ -26,7 +26,7 @@ public class Main {
         randomKey = randomStr.getAlphaNumericString(stringLength);
         try {
 
-            // Path to Git Bash on windows os:
+            // Path to Bash on windows os:
             // String bashPath = "C:\\Program Files\\Git\\bin\\bash.exe";
 
             // Full path to the script
