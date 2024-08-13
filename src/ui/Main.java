@@ -152,13 +152,22 @@ public class Main {
         Scanner input = new Scanner(System.in);
         String email, password;
 
-        System.out.println("\n\n\u2139\uFE0F Enter your login details \n ");
-        System.out.println("\u270F\uFE0F Enter Email: \t");
-        email = input.nextLine();
+// Loop until a valid email is provided
+while (true) {
+    System.out.print("\u270F\uFE0F Enter Email: ");
+    email = input.nextLine();
+    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+    if (email.matches(emailRegex)) {
+        break;
+    } else {
+        System.err.print("\n\u274C Please input a valid email! \n");
+    }
+}
+
 
         if (email.length() > 6) {
 
-            System.out.println("\u270F\uFE0F Enter Password: \t");
+            System.out.println("\n\u270F\uFE0F Enter Password: \t");
             Console console = System.console();
             char[] hiddenPass = console.readPassword(" Password: ");
             password = new String(hiddenPass);
@@ -213,7 +222,7 @@ public class Main {
         boolean cnt = true;
         boolean dateCnt = false;
 
-        System.out.println("\n\n\u270F\uFE0F Enter your UUID : \t ");
+        System.out.print("\n\n\u270F\uFE0F Enter your UUID : \t ");
         inputUUID = input.nextLine();
 
         // Check that there were actual input values:
@@ -230,23 +239,22 @@ public class Main {
                 System.out.println("\n\n\u2139\uFE0F Complete your registration!");
 
                 // Then go on to collect their data for final registration:
-                System.out.println("\n\n\u270F\uFE0F Enter your First Name : \t ");
+                System.out.print("\n\n\u270F\uFE0F Enter your First Name : \t ");
                 inputFName = input.nextLine();
 
-                System.out.println("\n\n\u270F\uFE0F Enter your Last Name : \t ");
+                System.out.print("\n\n\u270F\uFE0F Enter your Last Name : \t ");
                 inputLName = input.nextLine();
 
                 // Country Control:
                 boolean Countrycnt = false;
                 do {
-                    System.out.println("\n\n\u270F\uFE0F Enter your country (ISO 2 Code) : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your country (ISO 2 Code) : \t ");
                     country = input.nextLine();
 
                     if (country.length() > 0 && country.length() < 3) {
                         Countrycnt = true;
                     } else {
-                        System.out.println("\n\n\u274C Please enter valid country code! \n"); // Case of invalid country
-                                                                                              // code:
+                        System.out.println("\n\n\u274C Please enter valid country code! \n"); // Case of invalid country code:
                         Countrycnt = false;
                     }
                 } while (Countrycnt == false);
@@ -258,7 +266,7 @@ public class Main {
                 do {
 
                     // Prompt the user to enter a date
-                    System.out.println("\n\n\u270F\uFE0F Enter your date of birth (DD/MM/YYYY e.g: 17/05/2024) : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your date of birth (DD/MM/YYYY e.g: 17/05/2024) : \t ");
                     // Read the input using the next() method
                     dateStr = input.nextLine();
                     sdf.setLenient(false); // Enforce strict date parsing
@@ -285,7 +293,7 @@ public class Main {
                     System.out.println("\n\n\u270F\uFE0F Select your HIV Status : \t ");
                     System.out.println(" 1. Positive");
                     System.out.println(" 2. Negative");
-                    System.out.println("\n Choose option: ");
+                    System.out.print("\n Choose option: ");
                     hivStatus = input.nextLine();
 
                     if ("1".equals(hivStatus) || "2".equals(hivStatus)) {
@@ -298,8 +306,7 @@ public class Main {
                             System.out.println("\n\u274C Invalid option");
                         }
                     } else {
-                        System.out.println("\n\n\u274C Please select a valid HIV Status! \n"); // Case of invalid option
-                                                                                               // - neither 1 or 2:
+                        System.out.println("\n\n\u274C Please select a valid HIV Status! \n"); // Case of invalid option neither 1 or 2:
                         cnt = false;
                     }
                 } while (cnt == false);
@@ -312,9 +319,9 @@ public class Main {
 
                 do {
                     //
-                    System.out.println("\n\n\u270F\uFE0F Enter your Password : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your Password : \t ");
                     hiddenPass1 = console.readPassword(" Password: ");
-                    System.out.println("\n\n\u270F\uFE0F Enter your Password : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your Password : \t ");
                     hiddenPass2 = console.readPassword(" Confirm Password: ");
                     if (!new String(hiddenPass1).equals(new String(hiddenPass2))) {
                         // Passwords do not match:
@@ -361,25 +368,32 @@ public class Main {
         Scanner input = new Scanner(System.in);
 
         // Get New User's email to onboard:
-        System.out.println("\uD83D\uDC49 Enter user email: ");
+        System.out.print("\uD83D\uDC49 Enter user email: ");
         userEmail = input.nextLine();
 
         // Admin or Patient Role?:
-        System.out.println("\uD83E\uDD14 Should the user be an Admin? Yes or No :-->  \t");
-        checkAdminRole = input.nextLine();
-
-        if ("yes".equals(checkAdminRole.toLowerCase())) {
-            isAdmin = true;
-        } else {
-            isAdmin = false;
+        while (true) {
+            System.out.println("\n\uD83E\uDD14 Should the user be an Admin? \n");
+            System.out.println("   1. Yes\n");
+            System.out.println("   2. No \n");
+            System.out.print("\u270F\uFE0F Choose option--> ");
+            
+            try {
+                int choice = input.nextInt();
+                if (choice == 1 || choice == 2) {
+                    isAdmin = (choice == 1);
+                    break;
+                } else {
+                    System.out.println("\n\u274C Please enter a valid option!! \n");
+                }
+            } catch (Exception e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next();  // Clear the invalid input
+            }
         }
-
+    
         // Assign User roles:
-        if (isAdmin) {
-            role = "Admin";
-        } else {
-            role = "Patient";
-        }
+        role = isAdmin ? "Admin" : "Patient";
 
         // Generate new unique random user id and Save initial User data for new user
         // Onboarding to text file:
@@ -494,7 +508,7 @@ public class Main {
     private static void adminMenu() {
 
         // App option choice as int: local int
-        int choice;
+        int choice = -1;
 
         // Scanner objects to get user inputs
         Scanner input = new Scanner(System.in);
@@ -508,27 +522,35 @@ public class Main {
             System.out.println("\uD83D\uDD13 0. Logout \n\n");
 
             System.out.print("\u270F\uFE0F Choose option--> ");
-
-            // Get User Input Choice:
-            choice = input.nextInt();
-
-            if (choice == 1) {
-                // onboard interface;
-                onboardUserUI();
-
-            } else if (choice == 2) {
-                // Export user data method:
-                exportUsers();
-
-            } else if (choice == 3) {
-                // Download Statistics:
-                exportStatistics();
-
-            } else {
-                if (choice != 0) {
-                    System.out.println("\n\u274C Please enter a valid option!! \n");
+            
+            try {
+                
+                //Get User Input Choice:
+                choice = input.nextInt();
+                switch (choice) {
+                    case 1:
+                        onboardUserUI();
+                        break;
+                    case 2:
+                        exportUsers();
+                        break;
+                    case 3:
+                        exportStatistics();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        if (choice != 0) {
+                            System.out.println("\n\u274C Please enter a valid option!! \n");
+                        }
+                        break;
+    
                 }
+            } catch (Exception e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next(); 
             }
+    
             // Choice 0 will Logout Admin from his Dashboard!
         } while (choice != 0);
 
@@ -701,8 +723,30 @@ public class Main {
             currentAge = current_age;
 
             Scanner input = new Scanner(System.in);
-            System.out.println("\n\u270F\uFE0F Are you on ART Treatment ?(Yes or No): ");
-            takingART = input.nextLine();
+            OUTER:
+            while (true) {
+                System.out.println("\n\u270F\uFE0F Are you on ART Treatment?\n");
+                System.out.println("   1. Yes\n");
+                System.out.println("   2. No \n");
+                System.out.print("\u270F\uFE0F Choose option--> ");
+                try {
+                    int choice = input.nextInt();
+                    switch (choice) {
+                        case 1:
+                            takingART = "Yes";
+                            break OUTER;
+                        case 2:
+                            takingART = "No";
+                            break OUTER;
+                        default:
+                            System.out.println("\n\u274C Please enter a valid option!! \n");
+                            break;
+                    }
+                }catch (Exception e) {
+                    System.out.println("\n\u274C Invalid input! Please enter a number.");
+                    input.next();  // Clear the invalid input
+                }
+            }
 
             String dateContracted = null;
             // Date contracted illness:
@@ -919,9 +963,9 @@ public class Main {
                     Scanner updateInput = new Scanner(System.in);
                     updateCntrl = updateInput.nextLine();
                     if ("yes".equals((String) updateCntrl.toLowerCase())) {
-                        System.out.println("\n\u270F\uFE0F 1. Enter new First name: ");
+                        System.out.print("\n\n\u270F\uFE0F 1. Enter new First name: ");
                         newFName = updateInput.nextLine();
-                        System.out.println("\n\u270F\uFE0F 1. Enter new Last name: ");
+                        System.out.print("\n\n\u270F\uFE0F 1. Enter new Last name: ");
                         newLName = updateInput.nextLine();
 
                         // --------------
@@ -931,7 +975,7 @@ public class Main {
                         boolean dateCnt = false;
 
                         do {
-                            System.out.println("\n\n\u270F\uFE0F Enter your country (ISO 2 Code) : \t ");
+                            System.out.print("\n\n\u270F\uFE0F Enter your country (ISO 2 Code) : \t ");
                             newCountry = input.nextLine();
 
                             if (newCountry.length() > 0 && newCountry.length() < 3) {
@@ -952,7 +996,7 @@ public class Main {
                         do {
 
                             // Prompt the user to enter a date
-                            System.out.println(
+                            System.out.print(
                                     "\n\n\u270F\uFE0F Enter new date of birth (DD/MM/YYYY e.g: 17/05/2000) : \t ");
                             // Read the input using the next() method
                             dateStr = input.nextLine();
@@ -977,10 +1021,10 @@ public class Main {
                         // HIV Status selction control:
                         boolean cnt = false;
                         do {
-                            System.out.println("\n\n\u270F\uFE0F Select your new HIV Status : \t ");
+                            System.out.print("\n\n\u270F\uFE0F Select your new HIV Status : \t ");
                             System.out.println(" 1. Positive");
                             System.out.println(" 2. Negative");
-                            System.out.println("\n Choose option: ");
+                            System.out.print("\n Choose option: ");
                             newHIVStatus = input.nextLine();
 
                             if ("1".equals(newHIVStatus) || "2".equals(newHIVStatus)) {
@@ -1022,13 +1066,13 @@ public class Main {
                     downloadSchedule();
 
                 } else if (choice == 5) {
-                    System.out.println("\n\n\uD83C\uDFE5 \uD83E\uDD16 --- Virtual AI Therapy Assistant --- \n\n");
+                    System.out.println("\n\n\uD83C\uDFE5\uD83E\uDD16 --- Virtual AI Therapy Assistant --- \n\n");
                     boolean cont = true;
                     // AI Chat interface;
                     String query;
 
                     do {
-                        System.out.println("\n\n\uD83D\uDC64 You: (Enter 0 to quit chat!) ");
+                        System.out.print("\n\n\uD83D\uDC64 You: (Enter 0 to quit chat!) ");
                         query = input.nextLine();
                         if ("0".equals(query)) {
                             cont = false;
