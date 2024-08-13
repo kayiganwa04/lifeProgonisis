@@ -10,6 +10,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Scanner;
+import src.components.Country;
 import src.components.Extensions;
 import src.components.Patient;
 import src.components.RandomString;
@@ -26,7 +27,7 @@ public class Main {
         randomKey = randomStr.getAlphaNumericString(stringLength);
         try {
 
-            // Path to Bash on windows os:
+            // Path to Git Bash on windows os:
             // String bashPath = "C:\\Program Files\\Git\\bin\\bash.exe";
 
             // Full path to the script
@@ -166,10 +167,8 @@ while (true) {
 
 
         if (email.length() > 6) {
-
-            System.out.println("\n\u270F\uFE0F Enter Password: \t");
             Console console = System.console();
-            char[] hiddenPass = console.readPassword(" Password: ");
+            char[] hiddenPass = console.readPassword("\n\u270F\uFE0F Enter Password: \t");
             password = new String(hiddenPass);
             if (password.length() > 0) {
                 /*
@@ -623,32 +622,14 @@ while (true) {
 
     private static String getCountryLifeExpectancyAPI(String country) {
         // Call bash to get info from life-expectancy.csv:
-        String result = "";
-        try {
-            // Full path to the script
-            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/getLifeExpectancy.sh").toString();
-            // Build the command
-            String[] cmd = { "bash", "-c", scriptPath + " " + country };
-
-            // Execute the command
-            Process process = Runtime.getRuntime().exec(cmd);
-
-            // Get the output of the bash script
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result += line;
-            }
-
-            // Wait for the process to complete
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new RuntimeException("\u274C Script execution failed with exit code " + exitCode);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        String result;
+        //Get countries average life expectancy:
+        
+        Country myCountry = new Country();
+        //Set your country's ISO2 value:
+        myCountry.setISO2(country);
+        //Get country's average life expectancy:
+        result = myCountry.getCountryAvgLifeExpec(country);
         return result;
     }
 
@@ -719,6 +700,7 @@ while (true) {
 
             // Calculate the age
             int current_age = Period.between(birthDate, currentDate).getYears();
+            int choice;
 
             currentAge = current_age;
 
@@ -730,7 +712,7 @@ while (true) {
                 System.out.println("   2. No \n");
                 System.out.print("\u270F\uFE0F Choose option--> ");
                 try {
-                    int choice = input.nextInt();
+                    choice = input.nextInt();
                     switch (choice) {
                         case 1:
                             takingART = "Yes";
@@ -753,11 +735,12 @@ while (true) {
             // Date Control:
             String dateStr;
             boolean dateCnt = false;
+            boolean dateCnt2 = false;
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
             do {
                 // Prompt the user to enter a date
-                System.out.println("\n\n\u270F\uFE0F Date you became Infected (DD/MM/YYYY e.g: 17/05/2000) : \t ");
+                System.out.print("\n\n\u270F\uFE0F Date you became Infected (DD/MM/YYYY e.g: 17/05/2020) : ");
                 // Read the input using the next() method
                 dateStr = input.nextLine();
                 sdf.setLenient(false); // Enforce strict date parsing
@@ -785,31 +768,30 @@ while (true) {
             //In case not on ART
             int years = 0;
             // Date contracted illness:
-            if(takingART.equals("yes")){
+            if(choice == 1){
 
-            
             do {
                 // Prompt the user to enter a date
-                System.out.println("\n\n\u270F\uFE0F Date you started treatment (DD/MM/YYYY e.g: 17/05/2000) : \t ");
+                System.out.print("\n\n\u270F\uFE0F Date you started treatment (DD/MM/YYYY e.g: 17/05/2022) : ");
                 // Read the input using the next() method
                 dateStr = input.nextLine();
                 sdf.setLenient(false); // Enforce strict date parsing
 
-                Date date = null;
+                Date date2 = null;
                 boolean isValid = true;
 
                 // Attempt to parse the date
-                date = sdf.parse(dateStr, new java.text.ParsePosition(0));
+                date2 = sdf.parse(dateStr, new java.text.ParsePosition(0));
 
-                if (date != null) {
-                    dateTreatmentStarted = (String) sdf.format(date);
-                    dateCnt = true;
+                if (date2 != null) {
+                    dateTreatmentStarted = (String) sdf.format(date2);
+                    dateCnt2 = true;
                 } else {
                     System.out.println("\n\u274C Invalid date format");
-                    dateCnt = false;
+                    dateCnt2 = false;
                 }
 
-            } while (dateCnt == false);
+            } while (dateCnt2 == false);
 
             ageStartedTakingART = Period.between(LocalDate.parse(dateTreatmentStarted, formatter), currentDate)
                     .getYears();
