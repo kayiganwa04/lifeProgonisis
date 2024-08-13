@@ -1,4 +1,5 @@
 firstname lastname email password dob hiv_status role uuid country
-John Doe admin@user.com admin123 NULL NULL Admin abcdef123456 CM
-Janet Jackson jane@gmail.com 2002-05-17 positive jane123 Patient KlEcLnBPaImB RW
-Fonya Brandone fonya@gmail.com fonya123 17/05/2000 Positive Patient c8yHj0Zcn2gTlhNCF8V8DsPA rw
+John Doe admin@user.com 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9 NULL NULL Admin abcdef123456 CM
+MARK JOHN user@gmail.com 86c574a93ce7dde990d97d17fd350df853a46786ab00b782ba47aa5b2211fff7 26/12/20000 Positive Patient QdybNrH6GQyg0UlmrdzWa44r RW
+
+EDA EDD user1@gmail.com 86c574a93ce7dde990d97d17fd350df853a46786ab00b782ba47aa5b2211fff7 12/12/2000 Positive Patient t3WoLVx7gXqTB7KJn3OoYN9a RW

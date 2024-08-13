@@ -2,8 +2,12 @@ package src.ui;
 
 import java.io.BufferedReader;
 import java.io.Console;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -13,7 +17,8 @@ import java.util.Scanner;
 import src.components.Extensions;
 import src.components.Patient;
 import src.components.RandomString;
-
+import java.util.Formatter;
+import java.util.InputMismatchException;
 public class Main {
 
     public static RandomString randomStr = new RandomString();
@@ -60,12 +65,12 @@ public class Main {
     public static String loginAPI(String em, String pwd) {
         StringBuilder result = new StringBuilder();
         try {
-
+            String hashedPassword = hashPassword(pwd);
             // Full path to the script
             String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/login.sh").toString();
 
             // Build the command
-            String[] cmd = { "bash", "-c", scriptPath + " " + em + " " + pwd };
+            String[] cmd = { "bash", "-c", scriptPath + " " + em + " " + hashedPassword };
 
             // Start the process
             ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -114,35 +119,50 @@ public class Main {
     }
 
     public static String completeUserRegistrationAPI(String uuid, String fname, String lname, String password,
-            String dob, String hivStat, String country) {
-        StringBuilder result = new StringBuilder();
-        try {
+        String dob, String hivStat, String country) {
+    StringBuilder result = new StringBuilder();
+    try {
+        // Hash the password using SHA-256
+        String hashedPassword = hashPassword(password);
 
-            // Full path to the script
-            String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/completeOnboarding.sh").toString();
+        // Full path to the script
+        String scriptPath = Paths.get(System.getProperty("user.dir"), "scripts/completeOnboarding.sh").toString();
 
-            // Build the command
-            String[] cmd = { "bash", "-c", scriptPath + " " + uuid + " " + fname.toUpperCase() + " "
-                    + lname.toUpperCase() + " " + password + " " + dob + " " + hivStat + " " + country.toUpperCase() };
+        // Build the command
+        String[] cmd = { "bash", "-c", scriptPath + " " + uuid + " " + fname.toUpperCase() + " "
+                + lname.toUpperCase() + " " + hashedPassword + " " + dob + " " + hivStat + " " + country.toUpperCase() };
 
-            // Start the process
-            ProcessBuilder pb = new ProcessBuilder(cmd);
-            pb.redirectErrorStream(true); // Combine error and output streams
-            Process process = pb.start();
+        // Start the process
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectErrorStream(true); // Combine error and output streams
+        Process process = pb.start();
 
-            // Read the output from the process
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        // Read the output from the process
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            result.append(line);
         }
-        return result.toString();
-    }
 
+    } catch (IOException | NoSuchAlgorithmException e) {
+        e.printStackTrace();
+    }
+    return result.toString();
+}
+
+private static String hashPassword(String password) throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("SHA-256");
+    byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+    return byteArray2Hex(hash);
+}
+
+private static String byteArray2Hex(byte[] bytes) {
+    Formatter formatter = new Formatter();
+    for (byte b : bytes) {
+        formatter.format("%02x", b);
+    }
+    return formatter.toString();
+}
     // Saves Logged in User session:
     private static String sessionEmail = "", sessionPass = "";
 
@@ -154,7 +174,7 @@ public class Main {
 
 // Loop until a valid email is provided
 while (true) {
-    System.out.print("\u270F\uFE0F Enter Email: ");
+    System.out.print("\n\u270F\uFE0F Enter Email: ");
     email = input.nextLine();
     String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     if (email.matches(emailRegex)) {
@@ -167,9 +187,8 @@ while (true) {
 
         if (email.length() > 6) {
 
-            System.out.println("\n\u270F\uFE0F Enter Password: \t");
             Console console = System.console();
-            char[] hiddenPass = console.readPassword(" Password: ");
+            char[] hiddenPass = console.readPassword("\n\u270F\uFE0F Enter Password: ");
             password = new String(hiddenPass);
             if (password.length() > 0) {
                 /*
@@ -222,7 +241,7 @@ while (true) {
         boolean cnt = true;
         boolean dateCnt = false;
 
-        System.out.print("\n\n\u270F\uFE0F Enter your UUID : \t ");
+        System.out.print("\n\n\u270F\uFE0F Enter your UUID: ");
         inputUUID = input.nextLine();
 
         // Check that there were actual input values:
@@ -239,16 +258,16 @@ while (true) {
                 System.out.println("\n\n\u2139\uFE0F Complete your registration!");
 
                 // Then go on to collect their data for final registration:
-                System.out.print("\n\n\u270F\uFE0F Enter your First Name : \t ");
+                System.out.print("\n\n\u270F\uFE0F Enter your First Name: ");
                 inputFName = input.nextLine();
 
-                System.out.print("\n\n\u270F\uFE0F Enter your Last Name : \t ");
+                System.out.print("\n\n\u270F\uFE0F Enter your Last Name: ");
                 inputLName = input.nextLine();
 
                 // Country Control:
                 boolean Countrycnt = false;
                 do {
-                    System.out.print("\n\n\u270F\uFE0F Enter your country (ISO 2 Code) : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your country (ISO 2 Code): ");
                     country = input.nextLine();
 
                     if (country.length() > 0 && country.length() < 3) {
@@ -266,7 +285,7 @@ while (true) {
                 do {
 
                     // Prompt the user to enter a date
-                    System.out.print("\n\n\u270F\uFE0F Enter your date of birth (DD/MM/YYYY e.g: 17/05/2024) : \t ");
+                    System.out.print("\n\n\u270F\uFE0F Enter your date of birth (DD/MM/YYYY e.g: 17/05/2024): ");
                     // Read the input using the next() method
                     dateStr = input.nextLine();
                     sdf.setLenient(false); // Enforce strict date parsing
@@ -290,10 +309,10 @@ while (true) {
                 // HIV Status selction control:
 
                 do {
-                    System.out.println("\n\n\u270F\uFE0F Select your HIV Status : \t ");
-                    System.out.println(" 1. Positive");
-                    System.out.println(" 2. Negative");
-                    System.out.print("\n Choose option: ");
+                    System.out.println("\n\u270F\uFE0F Select your HIV Status:\n");
+                    System.out.println("   1. Positive\n");
+                    System.out.println("   2. Negative\n");
+                    System.out.print("\u270F\uFE0F Choose Option--> ");
                     hivStatus = input.nextLine();
 
                     if ("1".equals(hivStatus) || "2".equals(hivStatus)) {
@@ -319,10 +338,8 @@ while (true) {
 
                 do {
                     //
-                    System.out.print("\n\n\u270F\uFE0F Enter your Password : \t ");
-                    hiddenPass1 = console.readPassword(" Password: ");
-                    System.out.print("\n\n\u270F\uFE0F Enter your Password : \t ");
-                    hiddenPass2 = console.readPassword(" Confirm Password: ");
+                    hiddenPass1 = console.readPassword("\n\u270F\uFE0F Enter your Password: ");
+                    hiddenPass2 = console.readPassword("\n\u270F\uFE0F Confirm your Password: ");
                     if (!new String(hiddenPass1).equals(new String(hiddenPass2))) {
                         // Passwords do not match:
                         System.out.println("\n\n\u274C Passwords do not match! \n");
@@ -368,7 +385,7 @@ while (true) {
         Scanner input = new Scanner(System.in);
 
         // Get New User's email to onboard:
-        System.out.print("\uD83D\uDC49 Enter user email: ");
+        System.out.print("\n\uD83D\uDC49 Enter user email: ");
         userEmail = input.nextLine();
 
         // Admin or Patient Role?:
@@ -402,10 +419,10 @@ while (true) {
 
         // Check if UUID generated and email are valid:
         if (UUID.length() > 0 && UUID.length() == 24 && userEmail.length() > 6) {
-            System.out.println("\u2139\uFE0F New user Email: " + userEmail + "\n");
+            System.out.println("\n\u2139\uFE0F New user Email: " + userEmail);
 
-            System.out.println("\n New User\'s Role:  " + role + "\n");
-            System.out.println("\n New User\'s UUID:  " + UUID + "\n");
+            System.out.println("\n\u2139\uFE0F New User's Role:  " + role);
+            System.out.println("\n\u2139\uFE0F New User's UUID:  " + UUID);
 
             // --- inititiate OnboardUser(email, Role, UUID) Admin method: ---
             String result = registerAPI(userEmail, UUID, role);
@@ -1021,10 +1038,11 @@ while (true) {
                         // HIV Status selction control:
                         boolean cnt = false;
                         do {
-                            System.out.print("\n\n\u270F\uFE0F Select your new HIV Status : \t ");
-                            System.out.println(" 1. Positive");
-                            System.out.println(" 2. Negative");
-                            System.out.print("\n Choose option: ");
+                            System.out.print("\n\u270F\uFE0F Select your new HIV Status : \t ");
+                            System.out.println("   1. Positive\n");
+                            System.out.println("   2. Negative\n");
+                            System.out.print("\u270F\uFE0F Choose Option--> ");
+
                             newHIVStatus = input.nextLine();
 
                             if ("1".equals(newHIVStatus) || "2".equals(newHIVStatus)) {
@@ -1106,50 +1124,47 @@ while (true) {
         // --------------------------------------------------------------
         System.out.println("\n\n\uD83C\uDFE5 Welcome To Life Prognosis! \n");
         // App option choice as int:
-        int choice;
+        int choice = -1;
         // Scanner objects to get user inputs
         Scanner input = new Scanner(System.in);
         // Choice menu:
         // do while loop if choice is not 0:
         do {
-            System.out.println(YELLOW + "\n \uD83C\uDFE0 Menu \n\n");
-            System.out.println(" 1. \uD83D\uDD10 Login \n");
-            System.out.println(" 2. \uD83D\uDCDD Registration \n");
-            System.out.println(" 0. \uD83D\uDEAA Exit \n\n");
+            System.out.println(YELLOW + "\n\uD83C\uDFE0 Menu \n\n");
+            System.out.println("1. \uD83D\uDD10 Login \n");
+            System.out.println("2. \uD83D\uDCDD Registration \n");
+            System.out.println("0. \uD83D\uDEAA Exit \n\n");
 
             System.out.print("\u270F\uFE0F Choose Option--> ");
 
-            // Get User Input Choice:
-            choice = input.nextInt();
+            try {
+                // Get User Input Choice:
+                choice = input.nextInt();
 
-            switch (choice) {
-                case 1:
-                    // Login Interface
-                    loginUI();
-                    break;
-                // Choice 0 Exits the program!
-                case 2:
-                    // Registration Module using uuid:
-                    // call up the complete registration screen/UI:
-                    completeUserRegistrationUI();
-                    break;
-                case 0:
-                    animation.speak("Good bye!");
-                    System.out.println(
-                            "\n\n ***************************************************************************************************** \n");
-                    System.out.println("\n\t\t\t\uD83D\uDC4B Good bye for now \uD83D\uDC4B \n");
-                    System.out.println(
-                            "\n\n ***************************************************************************************************** \n\n");
-
-                    break;
-                default:
-                    if (choice != 0) {
-                        System.out.println("\n\u274C Please enter a valid option!! \n");
-                    }
-                    break;
+                switch (choice) {
+                    case 1:
+                        // Login Interface
+                        loginUI();
+                        break;
+                    case 2:
+                        // Registration Module using UUID:
+                        // Call up the complete registration screen/UI:
+                        completeUserRegistrationUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        if (choice != 0) {
+                            System.out.println("\n\u274C Please enter a valid option!! \n");
+                        }
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\n\u274C Invalid input! Please enter a number.");
+                input.next(); // Clear the invalid input from the scanner buffer
             }
-        } while (choice != 0);
 
+        } while (choice != 0);
     }
 
 }
